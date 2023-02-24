@@ -117,7 +117,7 @@
 	<!-- ++++++++ movieIdx 로 영화 정보 뽑아오는 쿼리 +++++++ -->
 	<select id="selectMovieInfo" parameterType="int"
 		resultType="movie.dto.MovieDto">
-		select title, story, opening, poster,movie_idx
+		select title, story, opening, poster,movie_idx,star_avg
 		from movie
 		where
 		movie_idx = #{movieIdx}
