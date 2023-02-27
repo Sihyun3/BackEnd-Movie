@@ -296,16 +296,18 @@ public class MovieApiController {
 	// -------------- 리뷰idx 에 따라 리뷰 상세 조회하는 코드------------------------
 	@GetMapping("/movie/review/detail/{reviewIdx}")
 	@ResponseBody
-	public ResponseEntity<Map<String, Object>> openReviewDetail(@PathVariable("reviewIdx") int reviewIdx)
+	public ResponseEntity<Map<String, Object>> openReviewDetail(@PathVariable("reviewIdx") int reviewIdx ,Authentication authentication)
 			throws Exception {
 		// 리스트 출력하는 메서드 + 영화 제목 출력하는 메서드 호출
 		ReviewDto detail = movieService.selectReviewDetail(reviewIdx);
 		MovieDto movieDto = movieService.selectMovieInfo(detail.getMovieIdx());
+		UserDto userDto = (UserDto) authentication.getPrincipal();
 		// map 사용
 		Map<String, Object> result = new HashMap<>();
 		// map 사용으로 두 가지 값 넣어줌
 		result.put("selectReviewList", detail);
 		result.put("movieTitle", movieDto);
+		result.put("userDto",userDto);
 		return ResponseEntity.status(HttpStatus.OK).body(result);
 	}
 
