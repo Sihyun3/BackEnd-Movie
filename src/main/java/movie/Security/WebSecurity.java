@@ -40,10 +40,10 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
 //		http.authorizeRequests()
 //		.antMatchers("/api/board/**").authenticated()
 //		.and().addFilter(getAuthenticationFilter());
-//		"/img/**","/login", "/api/regist","/api/mainpage","/api/user","/api/listAnnouncement","/api/Announcement/{announcementIdx}","/moviedetail/{movieIdx}","/movie/review/list/"
-		
+//	
+	
 		http.authorizeRequests()
-			.antMatchers("**").permitAll()	
+			.antMatchers(	"/img/**","/api/movie","/login", "/api/regist","/api/mainpage","/api/user","/api/listAnnouncement","/api/Announcement/{announcementIdx}","/moviedetail/{movieIdx}","/movie/review/list/").permitAll()	
 		.anyRequest().authenticated()
 		.and().addFilter(getAuthenticationFilter())
 		.addFilterBefore(jwtRequestFilter, AuthenticationFilter.class)

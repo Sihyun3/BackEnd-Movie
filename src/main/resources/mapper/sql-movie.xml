@@ -96,12 +96,10 @@
 	<!-- ++++++++ 리뷰 수정 쿼리 +++++++++ -->
 	<update id="updateReview" parameterType="movie.dto.ReviewDto">
 		update review
-		set title =
-		#{title},
+		set title = #{title},
 		contents = #{contents},
-		review_date= now(),
-		where review_idx =
-		#{reviewIdx}
+		review_date= now()
+		where review_idx = #{reviewIdx}
 	</update>
 	<!-- updated_id = #{updatedId} -->
 	<!-- ++++++++ 리뷰 삭제 쿼리 +++++++++ -->
