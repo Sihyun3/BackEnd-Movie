@@ -43,7 +43,7 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
 //	
 	
 		http.authorizeRequests()
-			.antMatchers(	"/img/**","/api/movie","/login", "/api/regist","/api/mainpage","/api/user","/api/listAnnouncement","/api/Announcement/{announcementIdx}","/moviedetail/{movieIdx}","/movie/review/list/").permitAll()	
+			.antMatchers("**").permitAll()	
 		.anyRequest().authenticated()
 		.and().addFilter(getAuthenticationFilter())
 		.addFilterBefore(jwtRequestFilter, AuthenticationFilter.class)

@@ -1,8 +1,6 @@
-
 package movie.Security;
 
 import java.io.IOException;
-import java.util.ArrayList;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -20,50 +18,46 @@ import lombok.extern.slf4j.Slf4j;
 import movie.dto.UserDto;
 import movie.mapper.LoginMapper;
 
+
 @Slf4j
 @Component
 public class JwtRequestFilter extends OncePerRequestFilter {
-	
-	private JwtTokenUtil jwtTokenUtil; 
-	private LoginMapper loginMapper;
-	
-	public JwtRequestFilter(JwtTokenUtil jwtTokenUtil, LoginMapper loginMapper) {
-		this.jwtTokenUtil = jwtTokenUtil;
-		this.loginMapper = loginMapper;
-	}
-	
-	@Override
-	public void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
-			throws ServletException, IOException {
-	
-		String jwtToken = null;
-		String subject = null;
-		String authorizationHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
-		log.debug(">>>>>>>>>>" + authorizationHeader);
-		
-		
-		if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
-			jwtToken = authorizationHeader.substring(7);
-			subject = jwtTokenUtil.getSubjectFromToken(jwtToken);
-		} else {
-			log.error("Authoriztion 헤더 누락 또는 토큰 형식 오류");
-		}
+   
+   private JwtTokenUtil jwtTokenUtil; 
+   private LoginMapper loginMapper;
+   
+   public JwtRequestFilter(JwtTokenUtil jwtTokenUtil, LoginMapper loginMapper) {
+      this.jwtTokenUtil = jwtTokenUtil;
+      this.loginMapper = loginMapper;
+   }
+   
+   @Override
+   public void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+         throws ServletException, IOException {
+   
+      String jwtToken = null;
+      String subject = null;
+      String authorizationHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
+      if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+         jwtToken = authorizationHeader.substring(7);
+         subject = jwtTokenUtil.getSubjectFromToken(jwtToken);
+      } else {
+         log.error("Authoriztion 헤더 누락 또는 토큰 형식 오류");
+      }
 
-		if (subject != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-			UserDto userDto = loginMapper.selectUserByUserId(subject);
-			
-			if (jwtTokenUtil.validateToken(jwtToken, userDto)) {
-				UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken 
-					= new UsernamePasswordAuthenticationToken(userDto, null, new ArrayList<>());
-				usernamePasswordAuthenticationToken.setDetails(new WebAuthenticationDetailsSource());
-				SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
-			}
-		} else {
-			SecurityContextHolder.getContext().setAuthentication(null);
-		}
-		
-		filterChain.doFilter(request, response);
-	}	
+      if (subject != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+         UserDto userDto = loginMapper.selectUserByUserId(subject);
+         
+         if (jwtTokenUtil.validateToken(jwtToken, userDto)) {
+            UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken 
+               = new UsernamePasswordAuthenticationToken(userDto, null, null);
+            usernamePasswordAuthenticationToken.setDetails(new WebAuthenticationDetailsSource());
+            SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
+         }
+      } else {
+         SecurityContextHolder.getContext().setAuthentication(null);
+      }
+      
+      filterChain.doFilter(request, response);
+   }   
 }
-
-

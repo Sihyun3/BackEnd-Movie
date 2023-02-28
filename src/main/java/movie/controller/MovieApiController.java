@@ -68,7 +68,7 @@ public class MovieApiController {
 	}
 
 	// 예약 포스트 버튼
-	// 날짜랑 영화 번호, 좌석만 넘어가면 될듯 registSeat일케 보내야 할듯 이름을
+
 	@PostMapping("api/reservation/")
 	public ResponseEntity<String> updateBoard(@RequestBody ObjectNode object, Authentication authentication)
 			throws Exception {
@@ -107,8 +107,7 @@ public class MovieApiController {
 //			}
 //		}
 	// 예약 조회
-	// 그러니까 그 예약들은 list로 해야할듯
-	// 아마도 토큰값 넘어오면 그 값으로 조회하고 토큰값이 안넘어오면 오류 던져서 메인페이지로 넘기면 될듯 아마 프론트 작업
+
 	@GetMapping("api/checkreservationlist/")
 	public ResponseEntity<List<ReservationDto>> checkReservationList(Authentication authentication) throws Exception {
 		UserDto userDto = (UserDto) authentication.getPrincipal();
@@ -153,7 +152,7 @@ public class MovieApiController {
 	}
 
 	// 선택된 좌석
-	// 입력따로 출력따로 가져가야하는건가
+
 	@GetMapping("api/reservedseat/{reservationDate}")
 	public ResponseEntity<List<SeatDto>> reservedSeat(@PathVariable("reservationDate") String reservationDate)
 			throws Exception {
@@ -189,8 +188,6 @@ public class MovieApiController {
 	}
 
 	// 한줄평 등록
-	// 이건 비회원도 가능하게? 아니면 토큰 값을 통해 이름을 작성자에다 박아버리면 될듯
-	// 회원제로 한다면 저 윗동네 영화 상세 페이지에 로그인 했다면 이름 띠어주는거 필요할듯
 	@PostMapping("api/movie/comments/write/{movieIdx}")
 	public ResponseEntity<Map<String, Object>> insertcomments(@RequestBody CommentsDto commentsDto,
 			@PathVariable("movieIdx") int movieIdx) throws Exception {
@@ -242,7 +239,6 @@ public class MovieApiController {
 	// selectMovieInfo 무비 정보 가져오는거
 
 	// ---------------리뷰 작성 페이지 mapping 및 등록 여부 메세지 코드 ---------------------
-	// 작성자 값을 받아 와서 세팅 해주면 될듯 토큰 없으면 오류 처리해주고
 	@PostMapping("api/movie/review/write/")
 	public ResponseEntity<Map<String, Object>> insertReview(@RequestBody ReviewDto reviewDto,
 			Authentication authentication) throws Exception {
@@ -312,7 +308,6 @@ public class MovieApiController {
 	}
 
 	// --------------- 리뷰idx 에 따라 리뷰 수정하는 코드 ---------------------
-	// 만약 작성자와 토큰값과 같다면 가능하게 모든값을 넘겨주면 될듯
 	@PutMapping("/movie/review/update/{reviewIdx}")
 	public ResponseEntity<String> updateBoard(@PathVariable("reviewIdx") int reviewIdx,
 			@RequestBody ReviewDto reviewDto, Authentication authentication) throws Exception {
@@ -336,7 +331,7 @@ public class MovieApiController {
 	}
 
 	// --------------- 리뷰idx 에 따라 리뷰 삭제하는 코드 -----------------------
-	// 이것도 위와 동일하게
+
 	@DeleteMapping("/movie/review/delete/{reviewIdx}")
 	public ResponseEntity<String> deleteReview(@PathVariable("reviewIdx") int reviewIdx, Authentication authentication)
 			throws Exception {
@@ -365,9 +360,25 @@ public class MovieApiController {
 	public ResponseEntity<Map<String, Object>> insertmovie(
 			@RequestPart(value = "data", required = false) MovieDto movieDto,
 			@RequestPart(value = "files", required = false) MultipartFile[] files) throws Exception {
-		String UPLOAD_PATH = "C:\\java\\eclispe-workspace\\movie\\src\\main\\resources\\static\\img\\";
+		String UPLOAD_PATH = "C:\\java\\eclispe-workspace\\movie\\src\\main\\resources\\static\\img\\"; 
 		int insertedCount = 0;
 		String fileNames = "";
+//		if (files != null) {
+//			for (MultipartFile mf : files) {
+//				String originFileName = mf.getOriginalFilename();
+//				String savedFileName = UUID.randomUUID().toString();
+//				uploadedDatas += "원본파일명: " + originFileName + "\n";
+//				uploadedDatas += "저장파일명: " + savedFileName + "\n";
+//				try {
+//					File f = new File(UPLOAD_DIR + savedFileName);
+//					mf.transferTo(f);
+//				} catch (Exception e) {
+//					e.printStackTrace();
+//					return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("오류");
+//				}
+//			}
+//		}
+
 		try {
 			for (MultipartFile mf : files) {
 				String originFileName = mf.getOriginalFilename(); // 원본 파일 명
