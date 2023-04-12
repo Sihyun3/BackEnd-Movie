@@ -64,7 +64,7 @@ public interface MovieMapper {
 	public List<ReservationDto>reservationIdx(String reservationDate)throws Exception;
 	public List<SeatDto> seatList(int reservationIdx)throws Exception;
 	public List<SeatDto> seatListDate(String reservationDate)throws Exception;
-	public int insertMovie(MovieDto movieDto)throws Exception;
+	public int insertMovie(MovieDto movieDto);
 	public List<ReservationDto> reservationList(String userId) throws Exception;
 	public int deleteMovie(MovieDto movieDto)throws Exception;
 	public int inserttime(CanReservationDateDto canReservationDateDto)throws Exception;

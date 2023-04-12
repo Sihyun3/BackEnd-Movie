@@ -41,7 +41,6 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
 //		.antMatchers("/api/board/**").authenticated()
 //		.and().addFilter(getAuthenticationFilter());
 //	
-	
 		http.authorizeRequests()
 			.antMatchers("**").permitAll()	
 		.anyRequest().authenticated()

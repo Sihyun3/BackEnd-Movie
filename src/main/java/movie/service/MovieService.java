@@ -68,13 +68,15 @@ public interface MovieService {
 	List<ReservationDto> reservationList(String userId) throws Exception;
 	List<SeatDto> seatListDate(String reservationDate)throws Exception;
 
-	int insertMovie(MovieDto movieDto, MultipartFile[] files)throws Exception;
+
 
 	int deleteMoive(MovieDto movieDto)throws Exception;
 
 	int inserttime(CanReservationDateDto canReservationDateDto)throws Exception;
 
 	int insertannouncement(AnnouncementDto announcementDto)throws Exception;
+
+	int insertMovie(MovieDto movieDto);
 
 
 

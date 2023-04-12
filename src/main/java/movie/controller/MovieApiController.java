@@ -1,14 +1,20 @@
 package movie.controller;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -33,8 +39,9 @@ import movie.dto.SeatDto;
 import movie.dto.UserDto;
 import movie.service.MovieService;
 
-@RestController
 
+@RestController
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class MovieApiController {
 
 	@Autowired
@@ -43,7 +50,7 @@ public class MovieApiController {
 	@GetMapping("/api/user")	
 	public ResponseEntity<UserDto> currentUserName(Authentication authentication) {
 		try {
-			System.out.println("asdasd");
+			System.out.println("asdasd");	
 			UserDto userDto = (UserDto) authentication.getPrincipal();
 			return ResponseEntity.status(HttpStatus.OK).body(userDto);
 		} catch (Exception e) {
@@ -89,7 +96,7 @@ public class MovieApiController {
 		} else {
 			return ResponseEntity.status(HttpStatus.OK).body("정상 등록 되었습니다.");
 		}
-//		} catch (Exception e) {
+//		} catch (Exception e) {	
 //			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("로그인 해주세요");
 //		}
 
@@ -153,7 +160,7 @@ public class MovieApiController {
 
 	// 선택된 좌석
 
-	@GetMapping("api/reservedseat/{reservationDate}")
+	@GetMapping("/api/reservedseat/{reservationDate}")
 	public ResponseEntity<List<SeatDto>> reservedSeat(@PathVariable("reservationDate") String reservationDate)
 			throws Exception {
 		List<SeatDto> seatDto = movieService.seatListDate(reservationDate);
@@ -165,7 +172,7 @@ public class MovieApiController {
 	}
 
 	// 공지사항 리스트
-	@GetMapping("api/listAnnouncement")
+	@GetMapping("/api/listAnnouncement")
 	public ResponseEntity<List<AnnouncementDto>> listAnnouncementDto() throws Exception {
 		List<AnnouncementDto> AnnouncementDto = movieService.listAnnouncementDto();
 		if (AnnouncementDto == null) {
@@ -176,7 +183,7 @@ public class MovieApiController {
 	}
 
 	// 공지사항 디테일
-	@GetMapping("api/Announcement/{announcementIdx}")
+	@GetMapping("/api/Announcement/{announcementIdx}")
 	public ResponseEntity<AnnouncementDto> announcementdetail(@PathVariable("announcementIdx") int announcementIdx)
 			throws Exception {
 		AnnouncementDto announcementDto = movieService.announcementdetail(announcementIdx);
@@ -188,7 +195,7 @@ public class MovieApiController {
 	}
 
 	// 한줄평 등록
-	@PostMapping("api/movie/comments/write/{movieIdx}")
+	@PostMapping("/api/movie/comments/write/{movieIdx}")
 	public ResponseEntity<Map<String, Object>> insertcomments(@RequestBody CommentsDto commentsDto,
 			@PathVariable("movieIdx") int movieIdx) throws Exception {
 		int insertedCount = 0;
@@ -239,7 +246,7 @@ public class MovieApiController {
 	// selectMovieInfo 무비 정보 가져오는거
 
 	// ---------------리뷰 작성 페이지 mapping 및 등록 여부 메세지 코드 ---------------------
-	@PostMapping("api/movie/review/write/")
+	@PostMapping("/api/movie/review/write/")
 	public ResponseEntity<Map<String, Object>> insertReview(@RequestBody ReviewDto reviewDto,
 			Authentication authentication) throws Exception {
 		int insertedCount = 0;
@@ -360,43 +367,22 @@ public class MovieApiController {
 	public ResponseEntity<Map<String, Object>> insertmovie(
 			@RequestPart(value = "data", required = false) MovieDto movieDto,
 			@RequestPart(value = "files", required = false) MultipartFile[] files) throws Exception {
-		String UPLOAD_PATH = "C:\\java\\eclispe-workspace\\movie\\src\\main\\resources\\static\\img\\"; 
+		String UPLOAD_PATH = "/my-app/image/"; 
 		int insertedCount = 0;
 		String fileNames = "";
-//		if (files != null) {
-//			for (MultipartFile mf : files) {
-//				String originFileName = mf.getOriginalFilename();
-//				String savedFileName = UUID.randomUUID().toString();
-//				uploadedDatas += "원본파일명: " + originFileName + "\n";
-//				uploadedDatas += "저장파일명: " + savedFileName + "\n";
-//				try {
-//					File f = new File(UPLOAD_DIR + savedFileName);
-//					mf.transferTo(f);
-//				} catch (Exception e) {
-//					e.printStackTrace();
-//					return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("오류");
-//				}
-//			}
-//		}
 
 		try {
 			for (MultipartFile mf : files) {
-				String originFileName = mf.getOriginalFilename(); // 원본 파일 명
-				long fileSize = mf.getSize(); // 파일 사이즈
-				System.out.println("originFileName : " + originFileName);
-				System.out.println("fileSize : " + fileSize);
-				String safeFile = System.currentTimeMillis() + originFileName;
-				movieDto.setPoster(originFileName);
-				fileNames = fileNames + "," + safeFile;
+				String originFileName = mf.getOriginalFilename();
 				try {
-					File f1 = new File(UPLOAD_PATH + originFileName);
-					mf.transferTo(f1);
+					File f = new File(UPLOAD_PATH + originFileName);
+					mf.transferTo(f);
 				} catch (IllegalStateException e) {
 					e.printStackTrace();
 				}
+				movieDto.setPoster(originFileName);
 			}
-
-			insertedCount = movieService.insertMovie(movieDto, files);
+			insertedCount = movieService.insertMovie(movieDto);
 
 			if (insertedCount > 0) {
 				Map<String, Object> result = new HashMap<>();
@@ -418,7 +404,34 @@ public class MovieApiController {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(result);
 		}
 	}
+	@GetMapping("/api/getImage/{poster}")
+	   public void getImage(@PathVariable("poster") String poster, HttpServletResponse response) throws Exception {
+	      // reviewImage를 읽어서 전달
+	      FileInputStream fis = null;
+	      BufferedInputStream bis = null;
+	      BufferedOutputStream bos = null;
+	      String UPLOAD_PATH = "/my-app/image/";
+	      try {
+	         response.setHeader("Content-Disposition", "inline;");
+	         
+	         byte[] buf = new byte[1024];
+	         fis = new FileInputStream(UPLOAD_PATH + poster);
+	         bis = new BufferedInputStream(fis);
+	         bos = new BufferedOutputStream(response.getOutputStream());
+	         int read;
+	         while((read = bis.read(buf, 0, 1024)) != -1) {
+	            bos.write(buf, 0, read);
+	         }
+	      } finally {
+	         bos.close();
+	         bis.close();
+	         fis.close();
+	      }
+	   }
 
+
+	
+	
 	@PutMapping("api/deletemovie")
 	public ResponseEntity<String> deleteMovie(@RequestBody MovieDto movieDto)
 			throws Exception {
@@ -441,6 +454,7 @@ public class MovieApiController {
 		}
 
 	}
+	
 	@PostMapping("api/insertannouncement")
 	public ResponseEntity<String> insertannouncement(@RequestBody AnnouncementDto announcementDto)
 			throws Exception {

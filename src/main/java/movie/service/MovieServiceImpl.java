@@ -171,8 +171,8 @@ public class MovieServiceImpl implements MovieService {
 	}
 
 	@Override
-	public int insertMovie(MovieDto movieDto, MultipartFile[] files)throws Exception {
-		// TODO Auto-generated method stub
+	public int insertMovie(MovieDto movieDto) {
+
 		return movieMapper.insertMovie(movieDto);
 	}
 
@@ -199,6 +199,8 @@ public class MovieServiceImpl implements MovieService {
 		// TODO Auto-generated method stub
 		return movieMapper.insertannouncement(announcementDto);
 	}
+
+
 
 	
 
